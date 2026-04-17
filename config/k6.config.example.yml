@@ -1,0 +1,14 @@
+# Sao chép thành k6.config.yml ở root hoặc: npm run dev -- run --config config/...
+
+requests:
+  - url: /health
+    method: GET
+  # - url: /api/other
+  #   method: POST
+
+# authorization:
+#   type: bearer
+#   tokenEnv: API_TOKEN
+
+vus: 5
+duration: 10s

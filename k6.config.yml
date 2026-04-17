@@ -1,0 +1,8 @@
+# BASE_URL lấy từ .env (CLI truyền env sang k6)
+
+requests:
+  - url: /blockchain-configs
+    method: GET
+
+vus: 5
+duration: 10s

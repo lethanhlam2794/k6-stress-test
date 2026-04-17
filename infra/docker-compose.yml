@@ -1,0 +1,26 @@
+# Grafana + InfluxDB 1.x (tương thích k6 output influxdb)
+# Grafana UI: http://localhost:3001 (tránh trùng app 3000)
+# InfluxDB: http://localhost:8086 — DB mặc định: k6
+#
+# Chạy k6 với output (ví dụ):
+#   k6 run -o influxdb=http://localhost:8086/k6 generated/test.js
+# hoặc cấu hình output trong generated script / CLI sau này.
+
+services:
+  influxdb:
+    image: influxdb:1.8
+    ports:
+      - "8086:8086"
+    environment:
+      INFLUXDB_DB: k6
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    ports:
+      - "3001:3000"
+    depends_on:
+      - influxdb
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
