@@ -1,0 +1,14 @@
+# Loads JSON dashboards from ./json (k6 + InfluxDB 1.x InfluxQL).
+
+apiVersion: 1
+
+providers:
+  - name: k6-influxdb
+    orgId: 1
+    folder: k6
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/json

@@ -14,9 +14,13 @@ services:
       INFLUXDB_DB: k6
 
   grafana:
-    image: grafana/grafana-oss:latest
+    # Pin version: grafana:latest (12+) can fail provisioning with
+    # "Datasource provisioning error: data source not found" when using datasource uid.
+    image: grafana/grafana-oss:11.3.0
     ports:
       - "3001:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - influxdb
     environment:

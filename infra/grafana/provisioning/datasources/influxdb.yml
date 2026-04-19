@@ -1,0 +1,16 @@
+# Auto-provision InfluxDB 1.x for k6 metrics (matches influxdb:1.8 + INFLUXDB_DB: k6).
+# Mounted into Grafana as /etc/grafana/provisioning/datasources/
+
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    database: k6
+    isDefault: true
+    jsonData:
+      # InfluxDB 1.x + k6 — must be InfluxQL (not Flux / InfluxDB 2)
+      version: InfluxQL
+      httpMode: GET

@@ -33,10 +33,14 @@ program
     }
     const scriptPath = "generated/test.js";
     generateK6Script(config, opts.scenario, scriptPath);
-    const result = spawnSync("k6", ["run", scriptPath], {
-      stdio: "inherit",
-      env: process.env,
-    });
+    const result = spawnSync(
+      "k6",
+      ["run", "--out", "influxdb=http://localhost:8086/k6", scriptPath],
+      {
+        stdio: "inherit",
+        env: process.env,
+      },
+    );
 
     if (result.error) {
       console.error("Error: Failed to start k6:", result.error.message);
