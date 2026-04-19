@@ -16,7 +16,8 @@ k6.config.yml
 node_modules/
 yarn.lock
 package-lock.json
-
+generated/
+generated/test.js
 makefile
 
 *.log
@@ -27,5 +28,4 @@ coverage.xml
 __pycache__/
 docs/
 .worktrees/
-generated/
 config/
