@@ -25,10 +25,17 @@ export interface RequestConfig {
   headers?: Record<string, string>;
 }
 
+export interface Stage {
+  duration: string;
+  target: number;
+}
+
 export interface K6Config {
   requests: RequestConfig[];
   /** Shared auth for all requests in the generated script */
   authorization?: AuthorizationConfig;
   vus?: number;
   duration?: string | number;
+  /** When set, emitted as k6 \`stages\`; otherwise the preset for \`--scenario\` is used */
+  stages?: Stage[];
 }

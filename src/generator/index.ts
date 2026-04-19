@@ -5,7 +5,15 @@ import type {
   AuthorizationConfig,
   K6Config,
   RequestConfig,
+  Stage,
 } from "../helpers/interface.js";
+import {
+  breakpointStages,
+  smokeStages,
+  loadStages,
+  soakStages,
+  spikeStages,
+} from "../scenarios/index.js";
 
 function buildScopedRequest(
   req: RequestConfig,
@@ -28,11 +36,28 @@ function buildScopedRequest(
   return `{\n${inner}\n}`;
 }
 
-function generateScript(config: K6Config): string {
+function generateScript(config: K6Config, scenario: string): string {
+  const SCENARIO_STAGES: Record<string, Stage[]> = {
+    smoke: smokeStages,
+    load: loadStages,
+    spike: spikeStages,
+    soak: soakStages,
+    breakpoint: breakpointStages,
+  };
+
+  const stages =
+    config.stages && config.stages.length > 0
+      ? config.stages
+      : SCENARIO_STAGES[scenario];
+
   const duration =
     typeof config.duration === "number"
       ? `${config.duration}s`
       : String(config.duration ?? "30s");
+
+  const optionsBlock = stages
+    ? `stages: ${JSON.stringify(stages, null, 2)}`
+    : `vus: ${config.vus ?? 1}, duration: ${JSON.stringify(duration)}`;
 
   const blocks = config.requests.map((req) =>
     buildScopedRequest(req, config.authorization),
@@ -45,8 +70,7 @@ import http from "k6/http";
 import { check, sleep } from "k6";
 
 export const options = {
-  vus: ${config.vus ?? 1},
-  duration: ${JSON.stringify(duration)},
+  ${optionsBlock},
 };
 
 export default function () {
@@ -62,9 +86,10 @@ ${body
 
 export function generateK6Script(
   config: K6Config,
+  scenario: string,
   outputPath = "generated/test.js",
 ): void {
-  const script = generateScript(config);
+  const script = generateScript(config, scenario);
   mkdirSync("generated", { recursive: true });
   writeFileSync(outputPath, script, "utf8");
   console.log(`✅ Script generated: ${outputPath}`);

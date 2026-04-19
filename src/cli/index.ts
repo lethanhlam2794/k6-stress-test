@@ -32,7 +32,7 @@ program
       process.exit(1);
     }
     const scriptPath = "generated/test.js";
-    generateK6Script(config, scriptPath);
+    generateK6Script(config, opts.scenario, scriptPath);
     const result = spawnSync("k6", ["run", scriptPath], {
       stdio: "inherit",
       env: process.env,
