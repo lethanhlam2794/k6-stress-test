@@ -1,61 +1,11 @@
 import { mkdirSync, writeFileSync } from "fs";
+import { buildHttpCall } from "../helpers/build-http-call.js";
+import { buildRequestHeadersCode } from "../helpers/build-request-headers-code.js";
 import type {
   AuthorizationConfig,
   K6Config,
   RequestConfig,
 } from "../helpers/interface.js";
-
-function buildRequestHeadersCode(
-  yamlHeaders: Record<string, string> | undefined,
-  auth: AuthorizationConfig | undefined,
-): string {
-  const base = JSON.stringify(yamlHeaders ?? {});
-  if (!auth || auth.type === "none" || !auth.type) {
-    return `const requestHeaders = Object.assign({}, ${base});`;
-  }
-  const env = auth.tokenEnv ?? "";
-  if (auth.type === "bearer") {
-    return `
-const requestHeaders = Object.assign({}, ${base});
-requestHeaders["Authorization"] = "Bearer " + String(__ENV[${JSON.stringify(env)}] ?? "");
-`.trim();
-  }
-  if (auth.type === "basic") {
-    return `
-const requestHeaders = Object.assign({}, ${base});
-requestHeaders["Authorization"] = "Basic " + String(__ENV[${JSON.stringify(env)}] ?? "");
-`.trim();
-  }
-  if (auth.type === "header" && auth.headerName) {
-    const name = auth.headerName;
-    return `
-const requestHeaders = Object.assign({}, ${base});
-requestHeaders[${JSON.stringify(name)}] = String(__ENV[${JSON.stringify(env)}] ?? "");
-`.trim();
-  }
-  return `const requestHeaders = Object.assign({}, ${base});`;
-}
-
-function buildHttpCall(method: string): string {
-  switch (method) {
-    case "GET":
-      return `http.get(fullUrl, params);`;
-    case "HEAD":
-      return `http.head(fullUrl, params);`;
-    case "POST":
-      return `http.post(fullUrl, "", params);`;
-    case "PUT":
-      return `http.put(fullUrl, "", params);`;
-    case "PATCH":
-      return `http.patch(fullUrl, "", params);`;
-    case "DELETE":
-      return `http.del(fullUrl, params);`;
-    case "OPTIONS":
-      return `http.options(fullUrl, null, params);`;
-    default:
-      return `http.get(fullUrl, params);`;
-  }
-}
 
 function buildScopedRequest(
   req: RequestConfig,
@@ -102,7 +52,7 @@ export const options = {
 export default function () {
 ${body
   .split("\n")
-  .map((line) => (line ? `  ${line}` : ""))
+  .map((line: string) => (line ? `  ${line}` : ""))
   .join("\n")}
 
   sleep(1);
