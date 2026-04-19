@@ -7,11 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let loaded = false;
 
-/**
- * Nạp `.env`: ưu tiên cwd, sau đó root project (src/cli hoặc dist/cli → ../..).
- * Các file khác không cần import module này — chỉ đọc `process.env`.
- * Entry (vd. `index.ts`): `import "./load-env.js"` (dòng import đầu tiên).
- */
+/** Loads `.env` from cwd, else from package root (two levels up from this file). */
 export function loadProjectEnv(): void {
   if (loaded) return;
   loaded = true;
